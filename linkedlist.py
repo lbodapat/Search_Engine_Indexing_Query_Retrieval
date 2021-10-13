@@ -77,7 +77,7 @@ class LinkedList:
             i=0
             x=0
             temp = n
-            while n is not None and i <n_skips:
+            while n is not None and i <=n_skips:
                 if (x==self.skip_length):
                     temp.skip_next=n
                     temp = n
