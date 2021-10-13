@@ -12,6 +12,7 @@ class Indexer:
         """ Add more attributes if needed"""
         self.inverted_index = OrderedDict({})
         self.i=0
+        self.unique_doc_ids=set()
 
     def get_index(self):
         """ Function to get the index.
@@ -21,6 +22,7 @@ class Indexer:
     def generate_inverted_index(self, doc_id, tokenized_document):
         """ This function adds each tokenized document to the index. This in turn uses the function add_to_index
             Already implemented."""
+        self.unique_doc_ids.add(doc_id)
         for t in tokenized_document:
             self.add_to_index(t, doc_id)
 
@@ -99,7 +101,6 @@ class Indexer:
                     tf=freq/doc_token_number[n.value]
                     tf_idf_value=tf*idf
                     n.tf_idf=tf_idf_value
-                    print("TF_IDF",n.value,tf_idf_value)
                     n = n.next
 
 

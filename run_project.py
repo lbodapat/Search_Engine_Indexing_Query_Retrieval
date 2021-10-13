@@ -18,6 +18,7 @@ import flask
 from flask import Flask
 from flask import request
 import hashlib
+import heapq
 
 app = Flask(__name__)
 
@@ -27,18 +28,67 @@ class ProjectRunner:
         self.preprocessor = Preprocessor()
         self.indexer = Indexer()
 
-    def _merge(self):
+    def _merge(self,postings_list1,postings_list2):
         """ Implement the merge algorithm to merge 2 postings list at a time.
             Use appropriate parameters & return types.
             While merging 2 postings list, preserve the maximum tf-idf value of a document.
             To be implemented."""
-        raise NotImplementedError
+        merged_postings_list=LinkedList()
 
-    def _daat_and(self):
+        node1=postings_list1.start_node
+        node2=postings_list2.start_node
+
+        merge_node=merged_postings_list.start_node
+
+        num_docs=0
+        num_comparisons=0
+        dictionary=dict()
+        while(node1 is not None and node2 is not None):
+            num_comparisons=num_comparisons+1
+            if(node1.value==node2.value):
+                num_docs=num_docs+1
+
+                merge_node.value=node1.value
+                merge_node.tf_idf=max(node1.tf_idf,node2.tf_idf)
+                merge_node=merge_node.next
+
+                node1=node1.next
+                node2=node2.next
+            elif(node1.value<node2.value):
+                node1=node1.next
+            else:
+                node2=node2.next
+
+        dictionary['linkedlist']=merge_node
+        dictionary['num_docs']=num_docs
+        dictionary['num_comparisons']=num_comparisons
+
+
+
+    def _daat_and(self,input_term_arr,k):
         """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
             Use appropriate parameters & return types.
             To be implemented."""
-        raise NotImplementedError
+        list_of_term_postings_list=[]
+        query_terms_list=input_term_arr
+        inverted_index= self.indexer.get_index()
+        unique_doc_ids=self.indexer.unique_doc_ids
+
+        for term in query_terms_list:
+            list_of_term_postings_list.append(inverted_index[term])
+
+        heap_list=[]
+        heapq.heapify(heap_list)
+        for document_id in unique_doc_ids:
+            score=0
+            for postings_list in list_of_term_postings_list:
+                n=postings_list.start_node
+                if(document_id==n.value):
+                    score=score+n.tf_idf
+                n=n.next
+            heapq.heappush(heap_list,(score,document_id))
+
+        return heapq.nlargest(k, heap_list)
 
     def _get_postings(self):
         """ Function to get the postings list of a term from the index.
@@ -55,6 +105,7 @@ class ProjectRunner:
         results_cnt = len(op_no_score)
         return op_no_score, results_cnt
 
+#TODO - complete Index building
     def run_indexer(self, corpus):
         """ This function reads & indexes the corpus. After creating the inverted index,
             it sorts the index by the terms, add skip pointers, and calculates the tf-idf scores.
@@ -86,6 +137,7 @@ class ProjectRunner:
                 "node_value": str(index[kw].start_node.value),
                 "command_result": eval(command) if "." in command else ""}
 
+#TODO- Complete Query Processing
     def run_queries(self, query_list, random_command):
         """ DO NOT CHANGE THE output_dict definition"""
         output_dict = {'postingsList': {},
@@ -103,9 +155,11 @@ class ProjectRunner:
                 3. Get the DAAT AND query results & number of comparisons with & without skip pointers.
                 4. Get the DAAT AND query results & number of comparisons with & without skip pointers, 
                     along with sorting by tf-idf scores."""
-            raise NotImplementedError
 
-            input_term_arr = []  # Tokenized query. To be implemented.
+             # Tokenized query. To be implemented.
+            input_term_arr=self.preprocessor.tokenizer(query)
+
+            inverted_index= self.indexer.get_index()
 
             for term in input_term_arr:
                 postings, skip_postings = None, None
@@ -113,6 +167,9 @@ class ProjectRunner:
                 """ Implement logic to populate initialize the above variables.
                     The below code formats your result to the required format.
                     To be implemented."""
+
+                postings=inverted_index[term].traverse_list()
+                skip_postings=inverted_index[term].traverse_skips()
 
                 output_dict['postingsList'][term] = postings
                 output_dict['postingsListSkip'][term] = skip_postings

@@ -19,7 +19,6 @@ class Node:
         self.term_frequency=term_frequency
         self.tf_idf=tf_idf
 
-
 class LinkedList:
     """ Class to define a linked list (postings list). Each element in the linked list is of the type 'Node'
         Each term in the inverted index has an associated linked list object.
@@ -40,7 +39,6 @@ class LinkedList:
                 # Start traversal from head, and go on till you reach None
             while n is not None:
                 traversal.append(n.value)
-                print("Trav",n.value, n.term_frequency)
                 n = n.next
         return traversal
 
@@ -51,7 +49,13 @@ class LinkedList:
         else:
             """ Write logic to traverse the linked list using skip pointers.
                 To be implemented."""
-            raise NotImplementedError
+            n = self.start_node
+            while n is not None and n.skip_next is not None:
+                traversal.append(n.value)
+                n=n.skip_next
+#             while n is not None:
+#                 traversal.append(n.value)
+#                 n=n.skip_next
             return traversal
 
     def add_skip_connections(self):
@@ -78,6 +82,7 @@ class LinkedList:
                     temp.skip_next=n
                     temp = n
                     x=0
+                    i=i+1
                 n = n.next
                 x+=1
 
