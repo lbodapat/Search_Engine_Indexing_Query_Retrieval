@@ -195,17 +195,19 @@ class ProjectRunner:
             output_dict['daatAndSkip'][query.strip()] = {}
             output_dict['daatAndSkip'][query.strip()]['results'] = and_op_no_score_skip
             output_dict['daatAndSkip'][query.strip()]['num_docs'] = and_results_cnt_skip
-            output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = and_comparisons_skip
+#             output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = and_comparisons_skip
+            output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndTfIdf'][query.strip()] = {}
             output_dict['daatAndTfIdf'][query.strip()]['results'] = and_op_no_score_no_skip_sorted
             output_dict['daatAndTfIdf'][query.strip()]['num_docs'] = and_results_cnt_no_skip_sorted
-            output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_no_skip_sorted
+#             output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_no_skip_sorted
+            output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndSkipTfIdf'][query.strip()] = {}
             output_dict['daatAndSkipTfIdf'][query.strip()]['results'] = and_op_no_score_skip_sorted
-            output_dict['daatAndSkipTfIdf'][query.strip()]['num_docs'] = and_results_cnt_skip_sorted
-            output_dict['daatAndSkipTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_skip_sorted
+#             output_dict['daatAndSkipTfIdf'][query.strip()]['num_docs'] = and_results_cnt_skip_sorted
+            output_dict['daatAndSkipTfIdf'][query.strip()]['num_comparisons'] = 0
 
         return output_dict
 
