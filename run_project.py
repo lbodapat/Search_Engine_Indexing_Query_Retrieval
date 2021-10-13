@@ -171,6 +171,9 @@ class ProjectRunner:
                 postings=inverted_index[term].traverse_list()
                 skip_postings=inverted_index[term].traverse_skips()
 
+                print("POSTINGS: ",postings,type(postings)
+                print("SKIP POSTINGS: ",skip_postings,type(skip_postings))
+
                 output_dict['postingsList'][term] = postings
                 output_dict['postingsListSkip'][term] = skip_postings
 
