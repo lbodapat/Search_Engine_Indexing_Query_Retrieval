@@ -89,7 +89,7 @@ class ProjectRunner:
                     score=score+n.tf_idf
                 n=n.next
             heapq.heappush(heap_list,(score,document_id))
-        return heapq.nlargest(k, heap_list)
+        return heapq.nlargest(10, heap_list)
 
     def _get_postings(self):
         """ Function to get the postings list of a term from the index.
@@ -174,14 +174,15 @@ class ProjectRunner:
                 output_dict['postingsList'][term] = postings
                 output_dict['postingsListSkip'][term] = skip_postings
 
-                print("SELF DAAT:",self._daat_and(input_term_arr,20))
-
             and_op_no_skip, and_op_skip, and_op_no_skip_sorted, and_op_skip_sorted = None, None, None, None
             and_comparisons_no_skip, and_comparisons_skip, \
                 and_comparisons_no_skip_sorted, and_comparisons_skip_sorted = None, None, None, None
             """ Implement logic to populate initialize the above variables.
                 The below code formats your result to the required format.
                 To be implemented."""
+
+            and_op_no_skip=self._daat_and(input_term_arr,20)
+
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
             and_op_no_score_no_skip_sorted, and_results_cnt_no_skip_sorted = self._output_formatter(and_op_no_skip_sorted)
