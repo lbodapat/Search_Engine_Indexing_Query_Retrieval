@@ -243,6 +243,7 @@ if __name__ == "__main__":
 
     output_location = "project2_output.json"
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    #TODO - Changes
     parser.add_argument("--corpus", type=str, help="Corpus File name, with path.")
     parser.add_argument("--output_location", type=str, help="Output file name.", default=output_location)
     parser.add_argument("--username", type=str,
