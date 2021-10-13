@@ -89,7 +89,7 @@ class ProjectRunner:
                     score=score+n.tf_idf
                 n=n.next
             heapq.heappush(heap_list,(score,document_id))
-        return heapq
+        return heapq.nlargest(10, heap_list)
 
     def _get_postings(self):
         """ Function to get the postings list of a term from the index.
@@ -181,9 +181,16 @@ class ProjectRunner:
                 The below code formats your result to the required format.
                 To be implemented."""
 
-            and_op_no_skip=self._daat_and(input_term_arr,20)
 
-            print(and_op_no_skip)
+            heapq_nlargest=self._daat_and(input_term_arr,20)
+            print("heapq_nlargest1 ",heapq_nlargest)
+            some_array=[]
+            for i in range(len(heapq_nlargest)):
+                 if(not (heapq_nlargest[i][0]==0)):
+                    some_array.append(heapq_nlargest[i][1])
+            print("SOME ARRAY1",some_array)
+            and_op_no_skip=some_array
+
 
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
