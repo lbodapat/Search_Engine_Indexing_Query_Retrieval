@@ -190,7 +190,8 @@ class ProjectRunner:
             output_dict['daatAnd'][query.strip()] = {}
             output_dict['daatAnd'][query.strip()]['results'] = and_op_no_score_no_skip
             output_dict['daatAnd'][query.strip()]['num_docs'] = and_results_cnt_no_skip
-            output_dict['daatAnd'][query.strip()]['num_comparisons'] = and_comparisons_no_skip
+#             output_dict['daatAnd'][query.strip()]['num_comparisons'] = and_comparisons_no_skip
+            output_dict['daatAnd'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndSkip'][query.strip()] = {}
             output_dict['daatAndSkip'][query.strip()]['results'] = and_op_no_score_skip
