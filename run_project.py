@@ -77,6 +77,8 @@ class ProjectRunner:
         for term in query_terms_list:
             list_of_term_postings_list.append(inverted_index[term])
 
+        num_docs=0
+        num_comparisons=0
         heap_list=[]
         heapq.heapify(heap_list)
         for document_id in unique_doc_ids:
@@ -87,7 +89,6 @@ class ProjectRunner:
                     score=score+n.tf_idf
                 n=n.next
             heapq.heappush(heap_list,(score,document_id))
-
         return heapq.nlargest(k, heap_list)
 
     def _get_postings(self):
@@ -170,12 +171,10 @@ class ProjectRunner:
 
                 postings=inverted_index[term].traverse_list()
                 skip_postings=inverted_index[term].traverse_skips()
-
-                print("POSTINGS: ",postings,type(postings))
-                print("SKIP POSTINGS: ",skip_postings,type(skip_postings))
-
                 output_dict['postingsList'][term] = postings
                 output_dict['postingsListSkip'][term] = skip_postings
+
+                print("SELF DAAT:",self._daat_and(input_term_arr,20))
 
             and_op_no_skip, and_op_skip, and_op_no_skip_sorted, and_op_skip_sorted = None, None, None, None
             and_comparisons_no_skip, and_comparisons_skip, \
