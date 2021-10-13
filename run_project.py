@@ -89,7 +89,7 @@ class ProjectRunner:
                     score=score+n.tf_idf
                 n=n.next
             heapq.heappush(heap_list,(score,document_id))
-        return heapq.nlargest(10, heap_list)
+        return heapq
 
     def _get_postings(self):
         """ Function to get the postings list of a term from the index.
