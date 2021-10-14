@@ -158,6 +158,55 @@ class ProjectRunner:
             output=self._merge_skip(merge_liked_list,inverted_index[term_sorted_list[i][1]])
         return output
 
+############################ SKIP MERGE - TF-IDF##############################
+    def _merge_skip_tf_idf(self,postings_list1,postings_list2):
+        """ Implement the merge algorithm to merge 2 postings list at a time.
+            Use appropriate parameters & return types.
+            While merging 2 postings list, preserve the maximum tf-idf value of a document.
+            To be implemented."""
+        merged_postings_list=LinkedList()
+        node1=postings_list1.start_node
+        node2=postings_list2.start_node
+        num_docs=0
+        num_comparisons=0
+        dictionary=dict()
+        merge_node=merged_postings_list.start_node
+        while(node1 is not None and node2 is not None):
+            num_comparisons=num_comparisons+1
+            if(node1.value==node2.value):
+                num_docs=num_docs+1
+                merged_postings_list.insert_at_end_tf_idf(node1.value,max(node1.tf_idf,node2.tf_idf))
+                node1=node1.next
+                node2=node2.next
+            elif(node1.value<node2.value):
+                if(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
+                    while(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
+                        node1=node1.skip_next
+                else:
+                    node1=node1.next
+            else:
+                if(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
+                    while(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
+                        node2=node2.skip_next
+                else:
+                    node2=node2.next
+
+        dictionary['linkedlist']=merged_postings_list
+        dictionary['num_docs']=num_docs
+        dictionary['num_comparisons']=num_comparisons
+        return dictionary
+
+    def merge_test_skip_tf_idf(self,input_term_arr):
+        term_sorted_list=[]
+        inverted_index= self.indexer.get_index()
+        heapq.heapify(term_sorted_list)
+        for term in input_term_arr:
+            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
+        merge_liked_list=inverted_index[term_sorted_list[0][1]]
+        for i in range(len(term_sorted_list)):
+            output=self._merge_skip_tf_idf(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        return output
+
 
     def _daat_and(self,input_term_arr,k):
         """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
@@ -366,15 +415,15 @@ class ProjectRunner:
             merge_output_tf_idf=self.merge_test_tf_idf(input_term_arr)
             and_op_no_skip_sorted=merge_output_tf_idf['linkedlist'].traverse_list_sort()
             and_comparisons_no_skip_sorted=merge_output_tf_idf['num_comparisons']
+            #MERGE TFIDF Sorted Skips
+            merge_output_skip_tf_idf=self.merge_test_skip_tf_idf(input_term_arr)
+            and_op_skip_sorted=merge_output_skip_tf_idf['linkedlist'].traverse_list_sort()
+            and_comparisons_skip_sorted=merge_output_tf_idf['num_comparisons']
 
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
             and_op_no_score_no_skip_sorted, and_results_cnt_no_skip_sorted = self._output_formatter(and_op_no_skip_sorted)
             and_op_no_score_skip_sorted, and_results_cnt_skip_sorted = self._output_formatter(and_op_skip_sorted)
-
-            #TODO CHANGE THIS
-            and_comparisons_no_skip_sorted=and_comparisons_no_skip
-            and_comparisons_skip_sorted=and_comparisons_skip
 
             output_dict['daatAnd'][query.strip()] = {}
             output_dict['daatAnd'][query.strip()]['results'] = and_op_no_score_no_skip
@@ -390,7 +439,6 @@ class ProjectRunner:
             output_dict['daatAndTfIdf'][query.strip()]['results'] = and_op_no_score_no_skip_sorted
             output_dict['daatAndTfIdf'][query.strip()]['num_docs'] = and_results_cnt_no_skip_sorted
             output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_no_skip_sorted
-#             output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndSkipTfIdf'][query.strip()] = {}
             output_dict['daatAndSkipTfIdf'][query.strip()]['results'] = and_op_no_score_skip_sorted
