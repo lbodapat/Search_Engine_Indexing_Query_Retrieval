@@ -159,6 +159,7 @@ class ProjectRunner:
             To be implemented."""
         list_of_term_postings_list=[]
         query_terms_list=input_term_arr
+        lenTerms = len(query_terms_list)
         inverted_index= self.indexer.get_index()
         unique_doc_ids=self.indexer.unique_doc_ids
 
@@ -169,17 +170,29 @@ class ProjectRunner:
         num_comparisons=0
         heap_list=[]
         heapq.heapify(heap_list)
+        output=dict()
         for document_id in unique_doc_ids:
             score=0
+            lterm = 0
             for postings_list in list_of_term_postings_list:
                 n=postings_list.start_node
                 while(n is not None):
                     if(document_id==n.value):
                         score=score+n.tf_idf
+                        lterm += 1
                         break
-                    n=n.skip_next
-            heapq.heappush(heap_list,(score,document_id))
-        return heapq.nlargest(10, heap_list)
+#                     n=n.skip_next
+                    if(n.skip_next is not None):
+                        while(n.skip_next is not None):
+                            print("Skipping this doc:::::::::::: ",n.value)
+                            n=n.skip_next
+                    else:
+                        n=n.next
+            if score != 0 and lterm == lenTerms: heapq.heappush(heap_list,(score,document_id))
+
+        output['heapq']=heapq.nlargest(100, heap_list)
+        output['num_comparisons']=num_comparisons
+        return output
 
     def _get_postings(self):
         """ Function to get the postings list of a term from the index.
@@ -281,14 +294,19 @@ class ProjectRunner:
             for i in range(len(heapq_nlargest)):
                 some_array.append(heapq_nlargest[i][1])
             and_op_no_skip_sorted=some_array
-            and_comparisons_no_skip_sorted=num_comparisons_daat
+            and_comparisons_no_skip_sorted=num_comparisons_daat\
 
-#             and_op_no_skip=some_array
-#             some_array_skip=[]
-#             for i in range(len(heapq_nlargest_skip)):
-# #                  if(not (heapq_nlargest_skip[i][0]==0)):
-#                     some_array_skip.append(heapq_nlargest_skip[i][1])
-#             and_op_skip=some_array_skip
+            #DAAT Skip
+            output_daat_skip=self._daat_skip_and(input_term_arr,20)
+            heapq_nlargest_skip=output_daat_skip['heapq']
+            num_comparisons_daat_skip=output_daat_skip['num_comparisons']
+            some_array_skip=[]
+            for i in range(len(heapq_nlargest_skip)):
+                some_array_skip.append(heapq_nlargest_skip[i][1])
+            and_op_skip_sorted=some_array_skip
+            and_comparisons_skip_sorted=num_comparisons_daat_skip
+
+
 
             #MERGE
             merge_output=self.merge_test(input_term_arr)
