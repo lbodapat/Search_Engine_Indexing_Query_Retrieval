@@ -42,6 +42,24 @@ class LinkedList:
                 n = n.next
         return traversal
 
+    def traverse_list_sort(self):
+        traversal = []
+        if self.start_node is None:
+            print("List has no element")
+            return
+        else:
+            n = self.start_node
+                # Start traversal from head, and go on till you reach None
+            while n is not None:
+                traversal.append((n.tf_idf,n.value))
+                n = n.next
+        sorted_traveral_list=sorted(traversal, key=lambda t: (t[0], -t[1]), reverse=True)
+        output_array=[]
+        for i in range(len(sorted_traveral_list)):
+            print(sorted_traveral_list[i])
+            output_array.append(sorted_traveral_list[i][1])
+        return output_array
+
     def traverse_skips(self):
         traversal = []
         if self.start_node is None:
@@ -94,6 +112,42 @@ class LinkedList:
             element, and elements to the right are greater than the inserted element.
             To be implemented. """
         new_node = Node(value=value)
+        n = self.start_node
+        new_node.term_frequency+=1
+
+        if self.start_node is None:
+            self.start_node = new_node
+            self.end_node = new_node
+            return
+
+        elif self.start_node.value >= value:
+            self.start_node = new_node
+            self.start_node.next = n
+            return
+
+        elif self.end_node.value <= value:
+            self.end_node.next = new_node
+            self.end_node = new_node
+            return
+
+        else:
+            while n.value < value < self.end_node.value and n.next is not None:
+                n = n.next
+
+            m = self.start_node
+            while m.next != n and m.next is not None:
+                m = m.next
+
+            m.next = new_node
+            new_node.next = n
+            return
+
+    def insert_at_end_tf_idf(self, value,tf_idf_ip):
+        """ Write logic to add new elements to the linked list.
+            Insert the element at an appropriate position, such that elements to the left are lower than the inserted
+            element, and elements to the right are greater than the inserted element.
+            To be implemented. """
+        new_node = Node(value=value,tf_idf=tf_idf_ip)
         n = self.start_node
         new_node.term_frequency+=1
 

@@ -34,7 +34,6 @@ class Preprocessor:
         tokens=self.remove_stop_words(stopword_tokens)
         #Stem to convert tokens to terms
         terms=self.perform_stemming(tokens)
-        print("INDEXER TERMS",terms)
         return terms
 
     def clean_text(self,text):

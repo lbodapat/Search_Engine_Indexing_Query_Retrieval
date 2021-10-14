@@ -28,6 +28,7 @@ class ProjectRunner:
         self.preprocessor = Preprocessor()
         self.indexer = Indexer()
 
+############################ NORMAL MERGE##############################
     def _merge(self,postings_list1,postings_list2):
         """ Implement the merge algorithm to merge 2 postings list at a time.
             Use appropriate parameters & return types.
@@ -54,6 +55,7 @@ class ProjectRunner:
         dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
+
         return dictionary
 
     def merge_test(self,input_term_arr):
@@ -67,6 +69,47 @@ class ProjectRunner:
             output=self._merge(merge_liked_list,inverted_index[term_sorted_list[i][1]])
         return output
 
+############################ TF-IDF MERGE##############################
+    def _merge_tf_idf(self,postings_list1,postings_list2):
+        """ Implement the merge algorithm to merge 2 postings list at a time.
+            Use appropriate parameters & return types.
+            While merging 2 postings list, preserve the maximum tf-idf value of a document.
+            To be implemented."""
+        merged_postings_list=LinkedList()
+        node1=postings_list1.start_node
+        node2=postings_list2.start_node
+        num_docs=0
+        num_comparisons=0
+        dictionary=dict()
+        merge_node=merged_postings_list.start_node
+        while(node1 is not None and node2 is not None):
+            num_comparisons=num_comparisons+1
+            if(node1.value==node2.value):
+                num_docs=num_docs+1
+                merged_postings_list.insert_at_end_tf_idf(node1.value,max(node1.tf_idf,node2.tf_idf))
+                node1=node1.next
+                node2=node2.next
+            elif(node1.value<node2.value):
+                node1=node1.next
+            else:
+                node2=node2.next
+        dictionary['linkedlist']=merged_postings_list
+        dictionary['num_docs']=num_docs
+        dictionary['num_comparisons']=num_comparisons
+        return dictionary
+
+    def merge_test_tf_idf(self,input_term_arr):
+        term_sorted_list=[]
+        inverted_index= self.indexer.get_index()
+        heapq.heapify(term_sorted_list)
+        for term in input_term_arr:
+            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
+        merge_liked_list=inverted_index[term_sorted_list[0][1]]
+        for i in range(len(term_sorted_list)):
+            output=self._merge_tf_idf(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        return output
+
+############################ NORMAL SKIP MERGE##############################
     def _merge_skip(self,postings_list1,postings_list2):
         """ Implement the merge algorithm to merge 2 postings list at a time.
             Use appropriate parameters & return types.
@@ -133,6 +176,8 @@ class ProjectRunner:
         num_comparisons=0
         heap_list=[]
         heapq.heapify(heap_list)
+        test=[]
+
         output=dict()
         for document_id in unique_doc_ids:
             score=0
@@ -147,6 +192,12 @@ class ProjectRunner:
                         break
                     n=n.next
             if score != 0 and lterm == lenTerms: heapq.heappush(heap_list,(score,document_id))
+
+        for item in heapq.nlargest(100, heap_list):
+            print(item)
+
+        print("Heap pop",heapq.heappop(heap_list))
+
         output['heapq']=heapq.nlargest(100, heap_list)
         output['num_comparisons']=num_comparisons
         return output
@@ -181,9 +232,8 @@ class ProjectRunner:
                         lterm += 1
                         break
 #                     n=n.skip_next
-                    if(n.skip_next is not None):
+                    elif(n.skip_next is not None):
                         while(n.skip_next is not None):
-                            print("Skipping this doc:::::::::::: ",n.value)
                             n=n.skip_next
                     else:
                         n=n.next
@@ -261,7 +311,6 @@ class ProjectRunner:
 
              # Tokenized query. To be implemented.
             input_term_arr=self.preprocessor.tokenizer(query)
-            print("QUERY TERMS",input_term_arr)
             inverted_index= self.indexer.get_index()
 
             for term in input_term_arr:
@@ -286,14 +335,14 @@ class ProjectRunner:
 
 
             #DAAT
-            output_daat=self._daat_and(input_term_arr,20)
-            heapq_nlargest=output_daat['heapq']
-            num_comparisons_daat=output_daat['num_comparisons']
-            some_array=[]
-            for i in range(len(heapq_nlargest)):
-                some_array.append(heapq_nlargest[i][1])
-            and_op_no_skip_sorted=some_array
-            and_comparisons_no_skip_sorted=num_comparisons_daat
+#             output_daat=self._daat_and(input_term_arr,20)
+#             heapq_nlargest=output_daat['heapq']
+#             num_comparisons_daat=output_daat['num_comparisons']
+#             some_array=[]
+#             for i in range(len(heapq_nlargest)):
+#                 some_array.append(heapq_nlargest[i][1])
+#             and_op_no_skip_sorted=some_array
+#             and_comparisons_no_skip_sorted=num_comparisons_daat
 
             #DAAT Skip
             output_daat_skip=self._daat_skip_and(input_term_arr,20)
@@ -305,8 +354,6 @@ class ProjectRunner:
             and_op_skip_sorted=some_array_skip
             and_comparisons_skip_sorted=num_comparisons_daat_skip
 
-
-
             #MERGE
             merge_output=self.merge_test(input_term_arr)
             and_op_no_skip=merge_output['linkedlist'].traverse_list()
@@ -315,6 +362,10 @@ class ProjectRunner:
             merge_output_skip=self.merge_test_skip(input_term_arr)
             and_op_skip=merge_output_skip['linkedlist'].traverse_list()
             and_comparisons_skip=merge_output_skip['num_comparisons']
+            #MERGE TFIDF Sorted
+            merge_output_tf_idf=self.merge_test_tf_idf(input_term_arr)
+            and_op_no_skip_sorted=merge_output_tf_idf['linkedlist'].traverse_list_sort()
+            and_comparisons_no_skip_sorted=merge_output_tf_idf['num_comparisons']
 
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
