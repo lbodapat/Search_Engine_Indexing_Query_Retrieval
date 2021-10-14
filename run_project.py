@@ -8,7 +8,6 @@ from preprocessor import Preprocessor
 from indexer import Indexer
 from collections import OrderedDict
 from linkedlist import LinkedList
-from linkedlist import Node
 import inspect as inspector
 import sys
 import argparse
@@ -294,7 +293,7 @@ class ProjectRunner:
             for i in range(len(heapq_nlargest)):
                 some_array.append(heapq_nlargest[i][1])
             and_op_no_skip_sorted=some_array
-            and_comparisons_no_skip_sorted=num_comparisons_daat\
+            and_comparisons_no_skip_sorted=num_comparisons_daat
 
             #DAAT Skip
             output_daat_skip=self._daat_skip_and(input_term_arr,20)
