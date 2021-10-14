@@ -52,6 +52,7 @@ class ProjectRunner:
                 node1=node1.next
             else:
                 node2=node2.next
+        merged_postings_list.add_skip_connections()
         dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
@@ -67,6 +68,7 @@ class ProjectRunner:
         merge_liked_list=inverted_index[term_sorted_list[0][1]]
         for i in range(len(term_sorted_list)):
             output=self._merge(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+            merge_liked_list=output['linkedlist']
         return output
 
 ############################ TF-IDF MERGE##############################
@@ -93,6 +95,7 @@ class ProjectRunner:
                 node1=node1.next
             else:
                 node2=node2.next
+        merged_postings_list.add_skip_connections()
         dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
@@ -107,6 +110,7 @@ class ProjectRunner:
         merge_liked_list=inverted_index[term_sorted_list[0][1]]
         for i in range(len(term_sorted_list)):
             output=self._merge_tf_idf(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+            merge_liked_list=output['linkedlist']
         return output
 
 ############################ NORMAL SKIP MERGE##############################
@@ -146,6 +150,7 @@ class ProjectRunner:
                     num_comparisons=num_comparisons+1
                     node2=node2.next
 
+        merged_postings_list.add_skip_connections()
         dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
@@ -160,6 +165,7 @@ class ProjectRunner:
         merge_liked_list=inverted_index[term_sorted_list[0][1]]
         for i in range(len(term_sorted_list)):
             output=self._merge_skip(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+            merge_liked_list=output['linkedlist']
         return output
 
 ############################ SKIP MERGE - TF-IDF##############################
@@ -199,6 +205,7 @@ class ProjectRunner:
                     num_comparisons=num_comparisons+1
                     node2=node2.next
 
+        merged_postings_list.add_skip_connections()
         dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
@@ -213,6 +220,7 @@ class ProjectRunner:
         merge_liked_list=inverted_index[term_sorted_list[0][1]]
         for i in range(len(term_sorted_list)):
             output=self._merge_skip_tf_idf(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+            merge_liked_list=output['linkedlist']
         return output
 
 
