@@ -34,37 +34,24 @@ class ProjectRunner:
             Use appropriate parameters & return types.
             While merging 2 postings list, preserve the maximum tf-idf value of a document.
             To be implemented."""
-
-#         print("postings_list1",postings_list1.traverse_list())
-#         print("postings_list2",postings_list2.traverse_list())
-
         merged_postings_list=LinkedList()
-
         node1=postings_list1.start_node
         node2=postings_list2.start_node
-
-
         num_docs=0
         num_comparisons=0
         dictionary=dict()
-#         merged_postings_list=postings_list1
         merge_node=merged_postings_list.start_node
         while(node1 is not None and node2 is not None):
             num_comparisons=num_comparisons+1
             if(node1.value==node2.value):
                 num_docs=num_docs+1
-
                 merged_postings_list.insert_at_end(node1.value)
-#                 merge_node.tf_idf=max(node1.tf_idf,node2.tf_idf)
-
                 node1=node1.next
                 node2=node2.next
             elif(node1.value<node2.value):
                 node1=node1.next
             else:
                 node2=node2.next
-
-#         print("merged_postings_list",merged_postings_list.traverse_list())
         dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
@@ -76,11 +63,66 @@ class ProjectRunner:
         heapq.heapify(term_sorted_list)
         for term in input_term_arr:
             heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
-
         merge_liked_list=inverted_index[term_sorted_list[0][1]]
         for i in range(len(term_sorted_list)):
             output=self._merge(merge_liked_list,inverted_index[term_sorted_list[i][1]])
         return output
+
+    def _merge_skip(self,postings_list1,postings_list2):
+        """ Implement the merge algorithm to merge 2 postings list at a time.
+            Use appropriate parameters & return types.
+            While merging 2 postings list, preserve the maximum tf-idf value of a document.
+            To be implemented."""
+        merged_postings_list=LinkedList()
+        node1=postings_list1.start_node
+        node2=postings_list2.start_node
+        num_docs=0
+        num_comparisons=0
+        dictionary=dict()
+        merge_node=merged_postings_list.start_node
+        while(node1 is not None and node2 is not None):
+            num_comparisons=num_comparisons+1
+            print("Hello")
+            if(node1.value==node2.value):
+                print("docs eql")
+                num_docs=num_docs+1
+                merged_postings_list.insert_at_end(node1.value)
+                node1=node1.next
+                node2=node2.next
+            elif(node1.value<node2.value):
+                if(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
+                    while(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
+                        print("here1")
+#                         num_comparisons=num_comparisons+1
+                        node1=node1.skip_next
+                else:
+                    node1=node1.next
+            else:
+                if(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
+                    while(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
+                        print("here2")
+#                         num_comparisons=num_comparisons+1
+                        node2=node2.skip_next
+                else:
+                    node2=node2.next
+
+        dictionary['linkedlist']=merged_postings_list
+        dictionary['num_docs']=num_docs
+        dictionary['num_comparisons']=num_comparisons
+        return dictionary
+
+    def merge_test_skip(self,input_term_arr):
+        term_sorted_list=[]
+        inverted_index= self.indexer.get_index()
+        heapq.heapify(term_sorted_list)
+        for term in input_term_arr:
+            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
+        merge_liked_list=inverted_index[term_sorted_list[0][1]]
+        for i in range(len(term_sorted_list)):
+            print("merging")
+            output=self._merge_skip(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        return output
+
 
     def _daat_and(self,input_term_arr,k):
         """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
@@ -252,6 +294,10 @@ class ProjectRunner:
             merge_output=self.merge_test(input_term_arr)
             and_op_no_skip=merge_output['linkedlist'].traverse_list()
             and_comparisons_no_skip=merge_output['num_comparisons']
+            #MERGE Skips
+            merge_output_skip=self.merge_test_skip(input_term_arr)
+            and_op_skip=merge_output_skip['linkedlist'].traverse_list()
+            and_comparisons_skip=merge_output_skip['num_comparisons']
 
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
@@ -267,8 +313,8 @@ class ProjectRunner:
             output_dict['daatAndSkip'][query.strip()] = {}
             output_dict['daatAndSkip'][query.strip()]['results'] = and_op_no_score_skip
             output_dict['daatAndSkip'][query.strip()]['num_docs'] = and_results_cnt_skip
-#             output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = and_comparisons_skip
-            output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = 0
+            output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = and_comparisons_skip
+#             output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndTfIdf'][query.strip()] = {}
             output_dict['daatAndTfIdf'][query.strip()]['results'] = and_op_no_score_no_skip_sorted
