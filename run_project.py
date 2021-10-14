@@ -82,9 +82,7 @@ class ProjectRunner:
         merge_node=merged_postings_list.start_node
         while(node1 is not None and node2 is not None):
             num_comparisons=num_comparisons+1
-            print("Hello")
             if(node1.value==node2.value):
-                print("docs eql")
                 num_docs=num_docs+1
                 merged_postings_list.insert_at_end(node1.value)
                 node1=node1.next
@@ -92,16 +90,12 @@ class ProjectRunner:
             elif(node1.value<node2.value):
                 if(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
                     while(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
-                        print("here1")
-#                         num_comparisons=num_comparisons+1
                         node1=node1.skip_next
                 else:
                     node1=node1.next
             else:
                 if(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
                     while(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
-                        print("here2")
-#                         num_comparisons=num_comparisons+1
                         node2=node2.skip_next
                 else:
                     node2=node2.next
@@ -119,7 +113,6 @@ class ProjectRunner:
             heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
         merge_liked_list=inverted_index[term_sorted_list[0][1]]
         for i in range(len(term_sorted_list)):
-            print("merging")
             output=self._merge_skip(merge_liked_list,inverted_index[term_sorted_list[i][1]])
         return output
 
@@ -141,6 +134,7 @@ class ProjectRunner:
         num_comparisons=0
         heap_list=[]
         heapq.heapify(heap_list)
+        output=dict()
         for document_id in unique_doc_ids:
             score=0
             lterm = 0
@@ -148,12 +142,15 @@ class ProjectRunner:
                 n=postings_list.start_node
                 while(n is not None):
                     if(document_id==n.value):
+                        num_comparisons=num_comparisons+1
                         score=score+n.tf_idf
                         lterm += 1
                         break
                     n=n.next
             if score != 0 and lterm == lenTerms: heapq.heappush(heap_list,(score,document_id))
-        return heapq.nlargest(10, heap_list)
+        output['heapq']=heapq.nlargest(100, heap_list)
+        output['num_comparisons']=num_comparisons
+        return output
 
 
     def _daat_skip_and(self,input_term_arr,k):
@@ -277,18 +274,21 @@ class ProjectRunner:
 
 
             #DAAT
-#             heapq_nlargest=self._daat_and(input_term_arr,20)
-#             heapq_nlargest_skip=self._daat_skip_and(input_term_arr,20)
-#             some_array=[]
-#             for i in range(len(heapq_nlargest)):
-# #                  if(not (heapq_nlargest[i][0]==0)):
-#                 some_array.append(heapq_nlargest[i][1])
-# #             and_op_no_skip=some_array
+            output_daat=self._daat_and(input_term_arr,20)
+            heapq_nlargest=output_daat['heapq']
+            num_comparisons_daat=output_daat['num_comparisons']
+            some_array=[]
+            for i in range(len(heapq_nlargest)):
+                some_array.append(heapq_nlargest[i][1])
+            and_op_no_skip_sorted=some_array
+            and_comparisons_no_skip_sorted=num_comparisons_daat
+
+#             and_op_no_skip=some_array
 #             some_array_skip=[]
 #             for i in range(len(heapq_nlargest_skip)):
 # #                  if(not (heapq_nlargest_skip[i][0]==0)):
 #                     some_array_skip.append(heapq_nlargest_skip[i][1])
-# #             and_op_skip=some_array_skip
+#             and_op_skip=some_array_skip
 
             #MERGE
             merge_output=self.merge_test(input_term_arr)
@@ -319,8 +319,8 @@ class ProjectRunner:
             output_dict['daatAndTfIdf'][query.strip()] = {}
             output_dict['daatAndTfIdf'][query.strip()]['results'] = and_op_no_score_no_skip_sorted
             output_dict['daatAndTfIdf'][query.strip()]['num_docs'] = and_results_cnt_no_skip_sorted
-#             output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_no_skip_sorted
-            output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = 0
+            output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_no_skip_sorted
+#             output_dict['daatAndTfIdf'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndSkipTfIdf'][query.strip()] = {}
             output_dict['daatAndSkipTfIdf'][query.strip()]['results'] = and_op_no_score_skip_sorted
