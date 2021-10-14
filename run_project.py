@@ -249,7 +249,7 @@ class ProjectRunner:
 
              # Tokenized query. To be implemented.
             input_term_arr=self.preprocessor.tokenizer(query)
-
+            print("QUERY TERMS",input_term_arr)
             inverted_index= self.indexer.get_index()
 
             for term in input_term_arr:

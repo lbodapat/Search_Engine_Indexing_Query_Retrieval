@@ -34,11 +34,12 @@ class Preprocessor:
         tokens=self.remove_stop_words(stopword_tokens)
         #Stem to convert tokens to terms
         terms=self.perform_stemming(tokens)
+        print("INDEXER TERMS",terms)
         return terms
 
     def clean_text(self,text):
 #         print("Step1: Remove Special Characters, Convert text to Lower Case and remove white spaces")
-        return re.sub(r'[^a-z\s0-9-]', ' ', text.strip().lower())
+        return re.sub(r'[^a-z\s0-9-]', ' ', text.strip().lower()).strip()
 
     def tokenize_text(self,clean_text):
 #         print("Step2: Tokenizing the text")
