@@ -304,17 +304,19 @@ class ProjectRunner:
             and_op_no_score_no_skip_sorted, and_results_cnt_no_skip_sorted = self._output_formatter(and_op_no_skip_sorted)
             and_op_no_score_skip_sorted, and_results_cnt_skip_sorted = self._output_formatter(and_op_skip_sorted)
 
+            #TODO CHANGE THIS
+            and_comparisons_no_skip_sorted=and_comparisons_no_skip
+            and_comparisons_skip_sorted=and_comparisons_skip
+
             output_dict['daatAnd'][query.strip()] = {}
             output_dict['daatAnd'][query.strip()]['results'] = and_op_no_score_no_skip
             output_dict['daatAnd'][query.strip()]['num_docs'] = and_results_cnt_no_skip
             output_dict['daatAnd'][query.strip()]['num_comparisons'] = and_comparisons_no_skip
-#             output_dict['daatAnd'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndSkip'][query.strip()] = {}
             output_dict['daatAndSkip'][query.strip()]['results'] = and_op_no_score_skip
             output_dict['daatAndSkip'][query.strip()]['num_docs'] = and_results_cnt_skip
             output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = and_comparisons_skip
-#             output_dict['daatAndSkip'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndTfIdf'][query.strip()] = {}
             output_dict['daatAndTfIdf'][query.strip()]['results'] = and_op_no_score_no_skip_sorted
@@ -324,8 +326,8 @@ class ProjectRunner:
 
             output_dict['daatAndSkipTfIdf'][query.strip()] = {}
             output_dict['daatAndSkipTfIdf'][query.strip()]['results'] = and_op_no_score_skip_sorted
-#             output_dict['daatAndSkipTfIdf'][query.strip()]['num_docs'] = and_results_cnt_skip_sorted
-            output_dict['daatAndSkipTfIdf'][query.strip()]['num_comparisons'] = 0
+            output_dict['daatAndSkipTfIdf'][query.strip()]['num_docs'] = and_results_cnt_skip_sorted
+            output_dict['daatAndSkipTfIdf'][query.strip()]['num_comparisons'] = and_comparisons_skip_sorted
 
         return output_dict
 
