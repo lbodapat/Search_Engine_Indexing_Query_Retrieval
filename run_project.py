@@ -8,6 +8,7 @@ from preprocessor import Preprocessor
 from indexer import Indexer
 from collections import OrderedDict
 from linkedlist import LinkedList
+from linkedlist import Node
 import inspect as inspector
 import sys
 import argparse
@@ -33,24 +34,28 @@ class ProjectRunner:
             Use appropriate parameters & return types.
             While merging 2 postings list, preserve the maximum tf-idf value of a document.
             To be implemented."""
+
+#         print("postings_list1",postings_list1.traverse_list())
+#         print("postings_list2",postings_list2.traverse_list())
+
         merged_postings_list=LinkedList()
 
         node1=postings_list1.start_node
         node2=postings_list2.start_node
 
-        merge_node=merged_postings_list.start_node
 
         num_docs=0
         num_comparisons=0
         dictionary=dict()
+#         merged_postings_list=postings_list1
+        merge_node=merged_postings_list.start_node
         while(node1 is not None and node2 is not None):
             num_comparisons=num_comparisons+1
             if(node1.value==node2.value):
                 num_docs=num_docs+1
 
-                merge_node.value=node1.value
-                merge_node.tf_idf=max(node1.tf_idf,node2.tf_idf)
-                merge_node=merge_node.next
+                merged_postings_list.insert_at_end(node1.value)
+#                 merge_node.tf_idf=max(node1.tf_idf,node2.tf_idf)
 
                 node1=node1.next
                 node2=node2.next
@@ -59,13 +64,57 @@ class ProjectRunner:
             else:
                 node2=node2.next
 
-        dictionary['linkedlist']=merge_node
+#         print("merged_postings_list",merged_postings_list.traverse_list())
+        dictionary['linkedlist']=merged_postings_list
         dictionary['num_docs']=num_docs
         dictionary['num_comparisons']=num_comparisons
+        return dictionary
 
+    def merge_test(self,input_term_arr):
+        term_sorted_list=[]
+        inverted_index= self.indexer.get_index()
+        heapq.heapify(term_sorted_list)
+        for term in input_term_arr:
+            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
 
+        merge_liked_list=inverted_index[term_sorted_list[0][1]]
+        for i in range(len(term_sorted_list)):
+            output=self._merge(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        return output
 
     def _daat_and(self,input_term_arr,k):
+        """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
+            Use appropriate parameters & return types.
+            To be implemented."""
+        list_of_term_postings_list=[]
+        query_terms_list=input_term_arr
+        lenTerms = len(query_terms_list)
+        inverted_index= self.indexer.get_index()
+        unique_doc_ids=self.indexer.unique_doc_ids
+
+        for term in query_terms_list:
+            list_of_term_postings_list.append(inverted_index[term])
+
+        num_docs=0
+        num_comparisons=0
+        heap_list=[]
+        heapq.heapify(heap_list)
+        for document_id in unique_doc_ids:
+            score=0
+            lterm = 0
+            for postings_list in list_of_term_postings_list:
+                n=postings_list.start_node
+                while(n is not None):
+                    if(document_id==n.value):
+                        score=score+n.tf_idf
+                        lterm += 1
+                        break
+                    n=n.next
+            if score != 0 and lterm == lenTerms: heapq.heappush(heap_list,(score,document_id))
+        return heapq.nlargest(10, heap_list)
+
+
+    def _daat_skip_and(self,input_term_arr,k):
         """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
             Use appropriate parameters & return types.
             To be implemented."""
@@ -85,9 +134,11 @@ class ProjectRunner:
             score=0
             for postings_list in list_of_term_postings_list:
                 n=postings_list.start_node
-                if(document_id==n.value):
-                    score=score+n.tf_idf
-                n=n.next
+                while(n is not None):
+                    if(document_id==n.value):
+                        score=score+n.tf_idf
+                        break
+                    n=n.skip_next
             heapq.heappush(heap_list,(score,document_id))
         return heapq.nlargest(10, heap_list)
 
@@ -154,7 +205,7 @@ class ProjectRunner:
                 1. Pre-process & tokenize the query.
                 2. For each query token, get the postings list & postings list with skip pointers.
                 3. Get the DAAT AND query results & number of comparisons with & without skip pointers.
-                4. Get the DAAT AND query results & number of comparisons with & without skip pointers, 
+                4. Get the DAAT AND query results & number of comparisons with & without skip pointers,
                     along with sorting by tf-idf scores."""
 
              # Tokenized query. To be implemented.
@@ -171,6 +222,7 @@ class ProjectRunner:
 
                 postings=inverted_index[term].traverse_list()
                 skip_postings=inverted_index[term].traverse_skips()
+
                 output_dict['postingsList'][term] = postings
                 output_dict['postingsListSkip'][term] = skip_postings
 
@@ -181,16 +233,24 @@ class ProjectRunner:
                 The below code formats your result to the required format.
                 To be implemented."""
 
+            #DAAT
+#             heapq_nlargest=self._daat_and(input_term_arr,20)
+#             heapq_nlargest_skip=self._daat_skip_and(input_term_arr,20)
+#             some_array=[]
+#             for i in range(len(heapq_nlargest)):
+# #                  if(not (heapq_nlargest[i][0]==0)):
+#                 some_array.append(heapq_nlargest[i][1])
+# #             and_op_no_skip=some_array
+#             some_array_skip=[]
+#             for i in range(len(heapq_nlargest_skip)):
+# #                  if(not (heapq_nlargest_skip[i][0]==0)):
+#                     some_array_skip.append(heapq_nlargest_skip[i][1])
+# #             and_op_skip=some_array_skip
 
-            heapq_nlargest=self._daat_and(input_term_arr,20)
-            print("heapq_nlargest1 ",heapq_nlargest)
-            some_array=[]
-            for i in range(len(heapq_nlargest)):
-                 if(not (heapq_nlargest[i][0]==0)):
-                    some_array.append(heapq_nlargest[i][1])
-            print("SOME ARRAY1",some_array)
-            and_op_no_skip=some_array
-
+            #MERGE
+            merge_output=self.merge_test(input_term_arr)
+            and_op_no_skip=merge_output['linkedlist'].traverse_list()
+            and_comparisons_no_skip=merge_output['num_comparisons']
 
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
@@ -200,8 +260,8 @@ class ProjectRunner:
             output_dict['daatAnd'][query.strip()] = {}
             output_dict['daatAnd'][query.strip()]['results'] = and_op_no_score_no_skip
             output_dict['daatAnd'][query.strip()]['num_docs'] = and_results_cnt_no_skip
-#             output_dict['daatAnd'][query.strip()]['num_comparisons'] = and_comparisons_no_skip
-            output_dict['daatAnd'][query.strip()]['num_comparisons'] = 0
+            output_dict['daatAnd'][query.strip()]['num_comparisons'] = and_comparisons_no_skip
+#             output_dict['daatAnd'][query.strip()]['num_comparisons'] = 0
 
             output_dict['daatAndSkip'][query.strip()] = {}
             output_dict['daatAndSkip'][query.strip()]['results'] = and_op_no_score_skip
