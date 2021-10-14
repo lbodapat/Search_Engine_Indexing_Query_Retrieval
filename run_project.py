@@ -123,8 +123,8 @@ class ProjectRunner:
         dictionary=dict()
         merge_node=merged_postings_list.start_node
         while(node1 is not None and node2 is not None):
-            num_comparisons=num_comparisons+1
             if(node1.value==node2.value):
+                num_comparisons=num_comparisons+1
                 num_docs=num_docs+1
                 merged_postings_list.insert_at_end(node1.value)
                 node1=node1.next
@@ -132,14 +132,18 @@ class ProjectRunner:
             elif(node1.value<node2.value):
                 if(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
                     while(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
+                        num_comparisons=num_comparisons+1
                         node1=node1.skip_next
                 else:
+                    num_comparisons=num_comparisons+1
                     node1=node1.next
             else:
                 if(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
                     while(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
+                        num_comparisons=num_comparisons+1
                         node2=node2.skip_next
                 else:
+                    num_comparisons=num_comparisons+1
                     node2=node2.next
 
         dictionary['linkedlist']=merged_postings_list
@@ -172,8 +176,8 @@ class ProjectRunner:
         dictionary=dict()
         merge_node=merged_postings_list.start_node
         while(node1 is not None and node2 is not None):
-            num_comparisons=num_comparisons+1
             if(node1.value==node2.value):
+                num_comparisons=num_comparisons+1
                 num_docs=num_docs+1
                 merged_postings_list.insert_at_end_tf_idf(node1.value,max(node1.tf_idf,node2.tf_idf))
                 node1=node1.next
@@ -181,14 +185,18 @@ class ProjectRunner:
             elif(node1.value<node2.value):
                 if(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
                     while(node1.skip_next is not None and (node1.skip_next.value<=node2.value)):
+                        num_comparisons=num_comparisons+1
                         node1=node1.skip_next
                 else:
+                    num_comparisons=num_comparisons+1
                     node1=node1.next
             else:
                 if(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
                     while(node2.skip_next is not None and (node2.skip_next.value<=node1.value)):
+                        num_comparisons=num_comparisons+1
                         node2=node2.skip_next
                 else:
+                    num_comparisons=num_comparisons+1
                     node2=node2.next
 
         dictionary['linkedlist']=merged_postings_list
@@ -418,7 +426,7 @@ class ProjectRunner:
             #MERGE TFIDF Sorted Skips
             merge_output_skip_tf_idf=self.merge_test_skip_tf_idf(input_term_arr)
             and_op_skip_sorted=merge_output_skip_tf_idf['linkedlist'].traverse_list_sort()
-            and_comparisons_skip_sorted=merge_output_tf_idf['num_comparisons']
+            and_comparisons_skip_sorted=merge_output_skip_tf_idf['num_comparisons']
 
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
