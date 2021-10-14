@@ -322,8 +322,8 @@ class ProjectRunner:
             and_op_no_score_skip_sorted, and_results_cnt_skip_sorted = self._output_formatter(and_op_skip_sorted)
 
             #TODO CHANGE THIS
-#             and_comparisons_no_skip_sorted=and_comparisons_no_skip
-#             and_comparisons_skip_sorted=and_comparisons_skip
+            and_comparisons_no_skip_sorted=and_comparisons_no_skip
+            and_comparisons_skip_sorted=and_comparisons_skip
 
             output_dict['daatAnd'][query.strip()] = {}
             output_dict['daatAnd'][query.strip()]['results'] = and_op_no_score_no_skip
