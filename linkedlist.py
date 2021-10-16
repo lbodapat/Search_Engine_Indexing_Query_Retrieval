@@ -56,7 +56,6 @@ class LinkedList:
         sorted_traveral_list=sorted(traversal, key=lambda t: (t[0], -t[1]), reverse=True)
         output_array=[]
         for i in range(len(sorted_traveral_list)):
-            print(sorted_traveral_list[i])
             output_array.append(sorted_traveral_list[i][1])
         return output_array
 

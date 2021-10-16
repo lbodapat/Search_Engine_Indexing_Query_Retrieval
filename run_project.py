@@ -62,13 +62,19 @@ class ProjectRunner:
     def merge_test(self,input_term_arr):
         term_sorted_list=[]
         inverted_index= self.indexer.get_index()
-        heapq.heapify(term_sorted_list)
-        for term in input_term_arr:
-            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
-        merge_liked_list=inverted_index[term_sorted_list[0][1]]
-        for i in range(len(term_sorted_list)):
-            output=self._merge(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        for i in range(len(input_term_arr)):
+            postings_list=inverted_index[input_term_arr[i]]
+            term_sorted_list.append((postings_list.length,postings_list))
+
+        term_sorted_list=sorted(term_sorted_list,key=lambda i:(i[0]))
+        total_comps=0
+        merge_liked_list=term_sorted_list[0][1]
+        for i in range(1,len(input_term_arr)):
+            output=self._merge(merge_liked_list,term_sorted_list[i][1])
             merge_liked_list=output['linkedlist']
+            total_comps=total_comps+output['num_comparisons']
+
+        output['num_comparisons']=total_comps
         return output
 
 ############################ TF-IDF MERGE##############################
@@ -104,13 +110,19 @@ class ProjectRunner:
     def merge_test_tf_idf(self,input_term_arr):
         term_sorted_list=[]
         inverted_index= self.indexer.get_index()
-        heapq.heapify(term_sorted_list)
-        for term in input_term_arr:
-            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
-        merge_liked_list=inverted_index[term_sorted_list[0][1]]
-        for i in range(len(term_sorted_list)):
-            output=self._merge_tf_idf(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        for i in range(len(input_term_arr)):
+            postings_list=inverted_index[input_term_arr[i]]
+            term_sorted_list.append((postings_list.length,postings_list))
+
+        term_sorted_list=sorted(term_sorted_list,key=lambda i:(i[0]))
+        total_comps=0
+        merge_liked_list=term_sorted_list[0][1]
+        for i in range(1,len(input_term_arr)):
+            output=self._merge_tf_idf(merge_liked_list,term_sorted_list[i][1])
             merge_liked_list=output['linkedlist']
+            total_comps=total_comps+output['num_comparisons']
+
+        output['num_comparisons']=total_comps
         return output
 
 ############################ NORMAL SKIP MERGE##############################
@@ -159,13 +171,19 @@ class ProjectRunner:
     def merge_test_skip(self,input_term_arr):
         term_sorted_list=[]
         inverted_index= self.indexer.get_index()
-        heapq.heapify(term_sorted_list)
-        for term in input_term_arr:
-            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
-        merge_liked_list=inverted_index[term_sorted_list[0][1]]
-        for i in range(len(term_sorted_list)):
-            output=self._merge_skip(merge_liked_list,inverted_index[term_sorted_list[i][1]])
+        for i in range(len(input_term_arr)):
+            postings_list=inverted_index[input_term_arr[i]]
+            term_sorted_list.append((postings_list.length,postings_list))
+
+        term_sorted_list=sorted(term_sorted_list,key=lambda i:(i[0]))
+        total_comps=0
+        merge_liked_list=term_sorted_list[0][1]
+        for i in range(1,len(input_term_arr)):
+            output=self._merge_skip(merge_liked_list,term_sorted_list[i][1])
             merge_liked_list=output['linkedlist']
+            total_comps=total_comps+output['num_comparisons']
+
+        output['num_comparisons']=total_comps
         return output
 
 ############################ SKIP MERGE - TF-IDF##############################
@@ -214,15 +232,20 @@ class ProjectRunner:
     def merge_test_skip_tf_idf(self,input_term_arr):
         term_sorted_list=[]
         inverted_index= self.indexer.get_index()
-        heapq.heapify(term_sorted_list)
-        for term in input_term_arr:
-            heapq.heappush(term_sorted_list,(len(inverted_index[term].traverse_list()),term))
-        merge_liked_list=inverted_index[term_sorted_list[0][1]]
-        for i in range(len(term_sorted_list)):
-            output=self._merge_skip_tf_idf(merge_liked_list,inverted_index[term_sorted_list[i][1]])
-            merge_liked_list=output['linkedlist']
-        return output
+        for i in range(len(input_term_arr)):
+            postings_list=inverted_index[input_term_arr[i]]
+            term_sorted_list.append((postings_list.length,postings_list))
 
+        term_sorted_list=sorted(term_sorted_list,key=lambda i:(i[0]))
+        total_comps=0
+        merge_liked_list=term_sorted_list[0][1]
+        for i in range(1,len(input_term_arr)):
+            output=self._merge_skip_tf_idf(merge_liked_list,term_sorted_list[i][1])
+            merge_liked_list=output['linkedlist']
+            total_comps=total_comps+output['num_comparisons']
+
+        output['num_comparisons']=total_comps
+        return output
 
     def _daat_and(self,input_term_arr,k):
         """ Implement the DAAT AND algorithm, which merges the postings list of N query terms.
