@@ -459,6 +459,7 @@ class ProjectRunner:
             and_op_skip_sorted=merge_output_skip_tf_idf['linkedlist'].traverse_list_sort()
             and_comparisons_skip_sorted=merge_output_skip_tf_idf['num_comparisons']
 
+
             and_op_no_score_no_skip, and_results_cnt_no_skip = self._output_formatter(and_op_no_skip)
             and_op_no_score_skip, and_results_cnt_skip = self._output_formatter(and_op_skip)
             and_op_no_score_no_skip_sorted, and_results_cnt_no_skip_sorted = self._output_formatter(and_op_no_skip_sorted)
