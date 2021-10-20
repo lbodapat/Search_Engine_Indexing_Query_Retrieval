@@ -1,7 +1,3 @@
-'''
-@author: Sougata Saha
-Institute: University at Buffalo
-'''
 
 import collections
 from nltk.stem import PorterStemmer

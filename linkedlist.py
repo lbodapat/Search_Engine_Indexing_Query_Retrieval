@@ -1,7 +1,4 @@
-'''
-@author: Sougata Saha
-Institute: University at Buffalo
-'''
+
 
 import math
 

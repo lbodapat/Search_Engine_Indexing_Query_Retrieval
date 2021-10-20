@@ -1,7 +1,3 @@
-'''
-@author: Sougata Saha
-Institute: University at Buffalo
-'''
 
 from linkedlist import LinkedList
 from collections import OrderedDict
